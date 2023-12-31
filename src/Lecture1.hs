@@ -84,8 +84,33 @@ and 1 is the smallest, and 7 - 1 = 6.
 Try to use local variables (either let-in or where) to implement this
 function.
 -}
+
 minmax :: Int -> Int -> Int -> Int
+
+-- this works, below is are versions using let and where, 
+-- as suggested in the instructions
+
+{--}
 minmax x y z = (maximum [x,y,z]) - (minimum [x,y,z])
+--}
+
+-- implementation with let
+{--
+minmax x y z = 
+    let 
+        max3 a b c = if a>b && a>c then a else if b>a && b>c then b else c
+        min3 a b c = if a<b && a<c then a else if b<a && b<c then b else c
+    in (max3 x y z) - (min3 x y z)
+--}
+
+-- implementation with where
+{--
+minmax x y z = (max3 x y z) - (min3 x y z)
+    where
+        max3 a b c = if a>b && a>c then a else if b>a && b>c then b else c
+        min3 a b c = if a<b && a<c then a else if b<a && b<c then b else c
+--}
+
 
 {- | Implement a function that takes a string, start and end positions
 and returns a substring of a given string from the start position to
@@ -131,8 +156,24 @@ and lower than 6 elements (4, 5, 6, 7, 8 and 9).
 
 🕯 HINT: Use recursion to implement this function.
 -}
+
+
 lowerAndGreater :: Int -> [Int] -> String
+
+-- My implementation is not (explicitly recursive), I did a recursive version below
+
+{--}
 lowerAndGreater n list = show n ++ " is greater than " ++ show nGreater ++ " elements and lower than " ++ show nLower ++ " elements"
     where
         nGreater = length $ filter (<n) list
         nLower   = length $ filter (>n) list
+--}
+
+{--
+lowerAndGreater n list = show n ++ " is greater than " ++ show (nGreater n list) ++ " elements and lower than " ++ show (nLower n list) ++ " elements"
+    where
+        nGreater _ [] = 0
+        nGreater n (x:xs) = if n > x then 1 + nGreater n xs else nGreater n xs 
+        nLower _ [] = 0
+        nLower n (x:xs) = if n < x then 1 + nLower n xs else nLower n xs 
+--}
