@@ -119,6 +119,8 @@ spaces.
 
 🕯 HINT: look into Data.Char and Prelude modules for functions you may use.
 -}
+
+{-- This fails on an infinite string with spaces at the end... probably any infinite string.--}
 dropSpaces :: [Char] -> [Char]
 dropSpaces = filter (not . isSpace)
 
@@ -183,6 +185,49 @@ data Knight = Knight
     , knightEndurance :: Int
     }
 
+-- example of enum:
+--
+-- data Color
+--     = Red
+--     | Green
+--     | Blue
+
+-- This is from the slides:
+--
+-- type String = [Char]
+-- type FilePath = String
+-- Standard type aliases
+-- type Attack  = Int
+-- type Defense = Int
+-- type Health  = Int
+-- damage :: Attack -> Defense -> Health -> Health
+-- damage atk def hp = hp + def - atk
+
+-- also from slides:
+--
+-- data Chest a = MkChest
+--     { chestGold     :: Int
+--     , chestTreasure :: a
+--     }
+-- type BronzeChest = Chest Armor
+-- type SilverChest = Chest (Sword, Armor)
+-- type GoldenChest = Chest (Artifact, Sword, [Gemstone])
+
+-- ghci> :t MkChest
+-- MkChest :: Int -> a -> Chest a
+
+-- ghci> MkChest 100 True
+-- MkChest { chestGold = 100
+--         , chestTreasure = True}
+
+-- data RewardChest
+--     = Bronze BronzeChest
+--     | Silver SilverChest
+--     | Golden GoldenChest
+--
+-- reward :: Dragon -> RewardChest
+-- reward ... = ...
+
 dragonFight = error "TODO"
 
 ----------------------------------------------------------------------------
@@ -204,7 +249,10 @@ False
 True
 -}
 isIncreasing :: [Int] -> Bool
-isIncreasing = error "TODO"
+isIncreasing [] = True
+isIncreasing [x] = True
+isIncreasing [x,y] = y > x
+isIncreasing (x:y:ys) = (y > x) && (isIncreasing (y:ys))
 
 {- | Implement a function that takes two lists, sorted in the
 increasing order, and merges them into new list, also sorted in the
@@ -217,7 +265,13 @@ verify that.
 [1,2,3,4,7]
 -}
 merge :: [Int] -> [Int] -> [Int]
-merge = error "TODO"
+merge []     []     = []   -- both empty
+merge (x:xs) []     = x:xs -- right empty
+merge []     (y:ys) = y:ys -- left empty
+merge (x:xs) (y:ys) =      -- actually merge
+  if x <= y
+    then (x : merge xs (y:ys))
+    else (y : merge (x:xs) ys)
 
 {- | Implement the "Merge Sort" algorithm in Haskell. The @mergeSort@
 function takes a list of numbers and returns a new list containing the
@@ -234,7 +288,20 @@ The algorithm of merge sort is the following:
 [1,2,3]
 -}
 mergeSort :: [Int] -> [Int]
-mergeSort = error "TODO"
+mergeSort [] = []
+mergeSort [x] = [x]
+mergeSort [x,y] = 
+  if x < y 
+    then [x,y]
+    else [y,x]
+mergeSort (x:xs) = merge (mergeSort leftside)  (mergeSort rightside)
+  where
+    splitPair = splitAt (div (length (x:xs)) 2) (x:xs)
+    leftside = fst splitPair
+    rightside = snd splitPair
+  
+
+ 
 
 
 {- | Haskell is famous for being a superb language for implementing
