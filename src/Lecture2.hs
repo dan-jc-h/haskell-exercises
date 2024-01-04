@@ -296,9 +296,9 @@ mergeSort [x,y] =
     else [y,x]
 mergeSort (x:xs) = merge (mergeSort leftside)  (mergeSort rightside)
   where
-    splitPair = splitAt (div (length (x:xs)) 2) (x:xs)
-    leftside = fst splitPair
-    rightside = snd splitPair
+    splitListInTwo = splitAt (div (length (x:xs)) 2) (x:xs)
+    leftside = fst splitListInTwo
+    rightside = snd splitListInTwo
   
 
  
@@ -353,8 +353,20 @@ data EvalError
 {- | Having all this set up, we can finally implement an evaluation function.
 It returns either a successful evaluation result or an error.
 -}
+
+myVars = [("a",1::Int),("b",2::Int),("c",3::Int)]
+myExpr = Add (Var "a") (Lit 1)
+
 eval :: Variables -> Expr -> Either EvalError Int
-eval = error "TODO"
+--eval [] _ = Right 0 -- FIXME this is incorrect, [] vars is fine, as long as there are no vars used
+eval [] (Lit x) = Right x
+eval vars (Var x) = 
+  if lookup x vars == Nothing 
+  then Left (VariableNotFound x)
+  else Right 2
+eval vars (Add (Lit x)(Lit y)) = Right (x+y)
+eval vars (Add (Var x)(Lit y)) = Right ( (lookup x vars) + y) 
+
 
 {- | Compilers also perform optimizations! One of the most common
 optimizations is "Constant Folding". It performs arithmetic operations
